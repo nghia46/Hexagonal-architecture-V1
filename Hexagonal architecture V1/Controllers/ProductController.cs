@@ -2,6 +2,7 @@
 using Core.Models;
 using Hexagonal_architecture_V1.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Hexagonal_architecture_V1.Controllers;
 
@@ -10,10 +11,12 @@ namespace Hexagonal_architecture_V1.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly ILoggingService _loggingService;
 
-    public ProductController(IProductRepository productRepository)
+    public ProductController(IProductRepository productRepository, ILoggingService loggingService)
     {
         _productRepository = productRepository;
+        _loggingService = loggingService;
     }
     [HttpGet]
     public async Task<IActionResult> GetAllProducts()
@@ -49,6 +52,10 @@ public class ProductController : ControllerBase
         };
 
         var created = await _productRepository.AddProductAsync(product);
+
+        var createdProduct = await _productRepository.GetProductByIdAsync(Guid.Parse(product.Id));
+        // Write log
+        await _loggingService.LogInfo($"Created: {JsonSerializer.Serialize(createdProduct)}");
         if (!created)
         {
             return BadRequest();

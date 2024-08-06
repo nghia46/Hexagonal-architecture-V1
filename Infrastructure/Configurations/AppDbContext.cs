@@ -10,11 +10,12 @@ public class AppDbContext : DbContext
         optionsBuilder.UseNpgsql("Host=localhost; Database=hexagon-db; Username=postgres; Password=Abcd1234");
     }
     public DbSet<Product> Products { get; set; }
-
+    public DbSet<LogModel> Logs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Product>().HasKey(p => p.Id);
+        modelBuilder.Entity<LogModel>().HasKey(l => l.Id);
     }
 
 }
